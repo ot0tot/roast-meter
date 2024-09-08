@@ -1,5 +1,17 @@
+#include <OLEDDisplay.h>
+#include <OLEDDisplayFonts.h>
+#include <OLEDDisplayUi.h>
+#include <SH1106.h>
+// #include <SH1106Brzo.h>
+// #include <SH1106Spi.h>
+#include <SH1106Wire.h>
+#include <SSD1306.h>
+// #include <SSD1306Brzo.h>
+#include <SSD1306I2C.h>
+// #include <SSD1306Spi.h>
+#include <SSD1306Wire.h>
+
 // VERSION 1.0.1-beta
-#include <SFE_MicroOLED.h>
 #include <Wire.h>
 
 #include "MAX30105.h"
@@ -8,7 +20,8 @@
 #define DC_JUMPER 1
 
 MAX30105 particleSensor;
-MicroOLED oled(PIN_RESET, DC_JUMPER);
+//MicroOLED oled(PIN_RESET, DC_JUMPER);
+SSD1306Wire oled(0x3c, SDA, SCL);
 
 long unblockedValue;  // Average IR at power up
 
@@ -21,21 +34,24 @@ String multiplyChar(char c, int n) {
 }
 
 void displayMeasurement(int rLevel) {
-  oled.clear(PAGE);
-  oled.setCursor(0, 0);
+  //oled.clear(PAGE);
+  oled.clear();
+  //oled.setCursor(0, 0);
 
   int calibratedReading = f(rLevel);
   int centerPadding = 4 - String(calibratedReading).length();
   String paddingText = multiplyChar(' ', centerPadding);
 
   if (rLevel == 0) {
-    oled.setFontType(1);
+    // oled.setFontType(1);
+    oled.setFont(ArialMT_Plain_24);
     oled.print("Please load   sample!");
     oled.display();
     return;
   }
 
-  oled.setFontType(3);
+  //oled.setFontType(3);
+  oled.setFont(ArialMT_Plain_24);
   oled.print(paddingText);
   oled.print(calibratedReading);
 
@@ -59,7 +75,8 @@ void setup() {
   Wire.begin();
   oled.begin();      // Initialize the OLED
   oled.clear(ALL);   // Clear the display's internal memory
-  oled.clear(PAGE);  // Clear the buffer.
+ // oled.clear(PAGE);  // Clear the buffer.
+  oled.clear();
 
   delay(100);  // Delay 100 ms
   oled.setFontType(3);
